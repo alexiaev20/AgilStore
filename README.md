@@ -1,120 +1,74 @@
-AgilStore
+# AgilStore
 
-AgilStore é um sistema simples de gerenciamento de produtos desenvolvido usando Spring Boot, MySQL e ferramentas como Swagger e Workbench para documentação e manipulação de banco de dados.
+AgilStore é um sistema simples de gerenciamento de produtos desenvolvido usando Spring Boot, MySQL e ferramentas como Swagger e para documentação .
 
-Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
-Java 17
+- **Java 17**
+- **Spring Boot**
+- **MySQL com Workbench**
+- **Swagger para documentação da API**
 
-Spring Boot
+## Funcionalidades
 
-MySQL com Workbench
+- **Cadastro de Produtos**: Permite adicionar novos produtos ao sistema.
+- **Consulta de Produtos**: Busca todos os produtos com opções de filtro por:
+  - Categoria
+  - Ordenação por nome, quantidade ou preço
+- **Paginação**: Exibição de produtos em páginas com tamanhos configuráveis.
+- **Busca por ID**: Recupera um produto específico pelo seu identificador.
+- **Atualização de Produto**: Atualiza as informações de um produto existente.
+- **Exclusão de Produto**: Remove um produto do sistema.
 
-Swagger para documentação da API
+## Instalação e Configuração
 
-Funcionalidades
+1. Clone este repositório:
 
-Cadastro de Produtos: Permite adicionar novos produtos ao sistema.
+   ```bash
+   git clone https://github.com/usuario/agilstore.git
 
-Consulta de Produtos: Busca todos os produtos com opções de filtro por:
+2. Configure o banco de dados MySQL no arquivo `application.properties`:
 
-Categoria
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/agilstore
+   spring.datasource.username=seu_usuario
+   spring.datasource.password=sua_senha
+   spring.jpa.hibernate.ddl-auto=update
+3. Execute a aplicação:
 
-Ordenação por nome, quantidade ou preço
+   ```bash
+   mvn spring-boot:run
+4. Acesse a documentação da API:
 
-Paginação: Exibição de produtos em páginas com tamanhos configuráveis.
+   Swagger: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
-Busca por ID: Recupera um produto específico pelo seu identificador.
+## Endpoints Principais
 
-Atualização de Produto: Atualiza as informações de um produto existente.
+| Método | Endpoint              | Descrição                    |
+|--------|-----------------------|------------------------------|
+| POST   | /api/produtos          | Adiciona um novo produto     |
+| GET    | /api/produtos          | Lista todos os produtos com filtros e ordenação |
+| GET    | /api/produtos/{id}     | Busca um produto por ID      |
+| PUT    | /api/produtos/{id}     | Atualiza um produto existente|
+| DELETE | /api/produtos/{id}     | Exclui um produto            |
 
-Exclusão de Produto: Remove um produto do sistema.
 
-Instalação e Configuração
+## Exemplos de Consultas com `curl`
 
-Clone este repositório:
+### 1. **Consultar todos os produtos (GET)**
 
-git clone https://github.com/usuario/agilstore.git
+```bash
+curl -X GET "http://localhost:8080/api/produtos"
+```
 
-Configure o banco de dados MySQL no arquivo application.properties:
+ **Buscar produtos filtrando por categoria (GET)**
 
-spring.datasource.url=jdbc:mysql://localhost:3306/agilstore
-spring.datasource.username=seu_usuario
-spring.datasource.password=sua_senha
-spring.jpa.hibernate.ddl-auto=update
+Aqui você pode adicionar o parâmetro `categoria` para buscar produtos em uma categoria específica.
 
-Execute a aplicação:
+```bash
+curl -X GET "http://localhost:8080/api/produtos?categoria=Periferico"
+```
+## Observações
 
-mvn spring-boot:run
-
-Acesse a documentação da API:
-
-Swagger: http://localhost:8080/swagger-ui/index.html
-
-Endpoints Principais
-
-Método
-
-Endpoint
-
-Descrição
-
-POST
-
-/api/produtos
-
-Adiciona um novo produto
-
-GET
-
-/api/produtos
-
-Lista todos os produtos com filtros e ordenação
-
-GET
-
-/api/produtos/{id}
-
-Busca um produto por ID
-
-PUT
-
-/api/produtos/{id}
-
-Atualiza um produto existente
-
-DELETE
-
-/api/produtos/{id}
-
-Exclui um produto
-
-Exemplos de Requisições
-
-Consulta com Categoria e Ordenação:
-
-curl -X GET "http://localhost:8080/api/produtos?categoria=Periferico&ordenarPor=preco"
-
-Paginação:
-
-curl -X GET "http://localhost:8080/api/produtos/paginado?pagina=0&tamanho=5&ordenarPor=nome&direcao=asc"
-
-Cadastro de Produto:
-
-curl -X POST -H "Content-Type: application/json" -d '{"nome":"Teclado","categoria":"Periferico","quantidade":15,"preco":200.0}' http://localhost:8080/api/produtos
-
-Observações
-
-Certifique-se de que o MySQL esteja rodando antes de iniciar a aplicação.
-
-Use o Swagger para interagir de forma intuitiva com os endpoints durante o desenvolvimento e teste.
-
-Melhorias Futuras
-
-Implementação de um relatório em PDF usando iText para exportar dados de produtos.
-
-Autenticação e autorização usando Spring Security.
-
-Licença
-
-Este projeto é de uso livre para fins educacionais e demonstrações.
+- Certifique-se de que o MySQL esteja rodando antes de iniciar a aplicação.
+- Use o Swagger para interagir de forma intuitiva com os endpoints durante o desenvolvimento e teste.
