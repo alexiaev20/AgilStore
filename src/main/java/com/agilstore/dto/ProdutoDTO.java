@@ -1,61 +1,24 @@
 package com.agilstore.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
 
-@Schema(description = "Representa um produto para criação ou atualização")
+@Data
 public class ProdutoDTO {
 
-    @Schema(description = "Nome do produto", example = "notebook")
+    @NotBlank(message = "O nome é obrigatório")
+    @Size(min = 2, max = 100, message = "O nome deve ter entre 2 e 100 caracteres")
     private String nome;
 
-    @Schema(description = "Categoria do produto", example = "eletronico")
+    @NotBlank(message = "A categoria é obrigatória")
     private String categoria;
 
-    @Schema(description = "Quantidade do produto no estoque", example = "1")
+    @PositiveOrZero(message = "A quantidade em estoque não pode ser negativa")
     private int quantidade;
 
-    @Schema(description = "Preço do produto", example = "800.00")
+    @DecimalMin(value = "0.01", message = "O preço deve ser maior que zero")
     private double preco;
-
-    // Construtor
-    public ProdutoDTO(String nome, String categoria, int quantidade, double preco) {
-        this.nome = nome;
-        this.categoria = categoria;
-        this.quantidade = quantidade;
-        this.preco = preco;
-    }
-
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public String getCategoria() {
-		return categoria;
-	}
-
-	public void setCategoria(String categoria) {
-		this.categoria = categoria;
-	}
-
-	public int getQuantidade() {
-		return quantidade;
-	}
-
-	public void setQuantidade(int quantidade) {
-		this.quantidade = quantidade;
-	}
-
-	public double getPreco() {
-		return preco;
-	}
-
-	public void setPreco(double preco) {
-		this.preco = preco;
-	}
-
-    // Getters e setters gerados automaticamente por @Data (Lombok)
 }

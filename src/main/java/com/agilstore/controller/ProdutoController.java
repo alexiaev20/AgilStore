@@ -23,7 +23,7 @@ public class ProdutoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Produto adicionarProduto(@RequestBody ProdutoDTO produtoDTO) {
+    public Produto adicionarProduto(@jakarta.validation.Valid @RequestBody ProdutoDTO produtoDTO) {
         return produtoService.adicionarProduto(produtoDTO);
     }
 
@@ -54,7 +54,7 @@ public class ProdutoController {
     }
 
     @PutMapping("/{id}")
-    public Produto atualizarProduto(@PathVariable Long id, @RequestBody ProdutoDTO produtoDTO) {
+    public Produto atualizarProduto(@PathVariable Long id, @jakarta.validation.Valid @RequestBody ProdutoDTO produtoDTO) {
         return produtoService.atualizarProduto(id, produtoDTO);
     }
 
