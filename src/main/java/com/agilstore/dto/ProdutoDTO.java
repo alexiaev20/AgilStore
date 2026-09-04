@@ -4,10 +4,14 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import org.springframework.hateoas.RepresentationModel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class ProdutoDTO {
+@EqualsAndHashCode(callSuper = false)
+public class ProdutoDTO extends RepresentationModel<ProdutoDTO> {
+    private Long id;
 
     @NotBlank(message = "O nome é obrigatório")
     @Size(min = 2, max = 100, message = "O nome deve ter entre 2 e 100 caracteres")
