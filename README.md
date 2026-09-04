@@ -41,4 +41,4 @@ Graças à conteinerização via Docker Compose, você não precisa configurar u
 A aplicação está configurada para exportar métricas. Com o Docker rodando, o Prometheus estará acessível para monitorar a saúde da API e do banco na porta `9090`.
 
 ---
-Desenvolvido aplicando os mais altos rigores de *Clean Code* e Design de Software.
+Desenvolvido por Alexia Melo
