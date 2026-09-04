@@ -25,4 +25,5 @@ public class ProdutoDTO extends RepresentationModel<ProdutoDTO> {
 
     @DecimalMin(value = "0.01", message = "O preço deve ser maior que zero")
     private double preco;
+    private String imagemUrl;
 }
