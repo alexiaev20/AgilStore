@@ -1,74 +1,44 @@
-# AgilStore
+# AgilStore - API de Gestão de Inventário Corporativa
 
-AgilStore é um sistema simples de gerenciamento de produtos desenvolvido usando Spring Boot, MySQL e ferramentas como Swagger e para documentação .
+A AgilStore é uma API RESTful completa de nível de produção desenvolvida em Java com Spring Boot. Este sistema foi arquitetado para suportar operações de larga escala, contemplando recursos avançados de Engenharia de Software como Event-Driven Architecture (Mensageria), HATEOAS, Observabilidade (Prometheus) e Cache.
 
-## Tecnologias Utilizadas
+## 🚀 Tecnologias Utilizadas
 
-- **Java 17**
-- **Spring Boot**
-- **MySQL com Workbench**
-- **Swagger para documentação da API**
+- **Linguagem:** Java 17
+- **Framework:** Spring Boot 3
+- **Banco de Dados:** MySQL 8
+- **Persistência e ORM:** Spring Data JPA + Hibernate
+- **Migrations:** Flyway
+- **Monitoramento e Observabilidade:** Spring Boot Actuator + Prometheus
+- **Performance:** Spring Cache
+- **DevOps:** Docker & Docker Compose
+- **Documentação:** Swagger (OpenAPI 3)
+- **Geração de Relatórios:** iTextPDF
 
-## Funcionalidades
+## 🏗️ Arquitetura e Recursos Avançados
 
-- **Cadastro de Produtos**: Permite adicionar novos produtos ao sistema.
-- **Consulta de Produtos**: Busca todos os produtos com opções de filtro por:
-  - Categoria
-  - Ordenação por nome, quantidade ou preço
-- **Paginação**: Exibição de produtos em páginas com tamanhos configuráveis.
-- **Busca por ID**: Recupera um produto específico pelo seu identificador.
-- **Atualização de Produto**: Atualiza as informações de um produto existente.
-- **Exclusão de Produto**: Remove um produto do sistema.
+1. **HATEOAS e Filtros Dinâmicos:** A API utiliza a *Specification API* para cruzamento dinâmico de filtros na listagem de produtos. As respostas JSON implementam o Nível 3 de Maturidade REST de Richardson, guiando o cliente através de links de navegação (`_links`).
+2. **Event-Driven Architecture:** Histórico contábil rigoroso através da entidade `MovimentacaoEstoque`. Rotinas em background (`@Scheduled`) publicam alertas assíncronos via *Spring ApplicationEvents* na detecção de quebras de estoque mínimo, não bloqueando a thread principal.
+3. **Resiliência e Validação:** *Bean Validation* em todos os DTOs protegendo contra valores negativos. *ControllerAdvice* interceptando exceções de forma global para padronização de erros JSON.
+4. **Infraestrutura Otimizada:** Cache em memória aliviando sobrecargas de leitura e geração transacional dinâmica de relatórios em PDF do estoque fechado.
 
-## Instalação e Configuração
+## ⚙️ Como Executar o Projeto
 
-1. Clone este repositório:
+Graças à conteinerização via Docker Compose, você não precisa configurar um banco de dados local.
 
+1. **Clone o repositório:**
    ```bash
-   git clone https://github.com/usuario/agilstore.git
-
-2. Configure o banco de dados MySQL no arquivo `application.properties`:
-
-   ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/agilstore
-   spring.datasource.username=seu_usuario
-   spring.datasource.password=sua_senha
-   spring.jpa.hibernate.ddl-auto=update
-3. Execute a aplicação:
-
+   git clone https://github.com/alexiaev20/AgilStore.git
+   ```
+2. **Suba a infraestrutura (Banco MySQL + API + Prometheus):**
    ```bash
-   mvn spring-boot:run
-4. Acesse a documentação da API:
+   docker-compose up -d --build
+   ```
+3. **Acesse a Documentação (Swagger):**
+   Abra seu navegador em: `http://localhost:8080/swagger-ui.html`
 
-   Swagger: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+## 📊 Monitoramento
+A aplicação está configurada para exportar métricas. Com o Docker rodando, o Prometheus estará acessível para monitorar a saúde da API e do banco na porta `9090`.
 
-## Endpoints Principais
-
-| Método | Endpoint              | Descrição                    |
-|--------|-----------------------|------------------------------|
-| POST   | /api/produtos          | Adiciona um novo produto     |
-| GET    | /api/produtos          | Lista todos os produtos com filtros e ordenação |
-| GET    | /api/produtos/{id}     | Busca um produto por ID      |
-| PUT    | /api/produtos/{id}     | Atualiza um produto existente|
-| DELETE | /api/produtos/{id}     | Exclui um produto            |
-
-
-## Exemplos de Consultas com `curl`
-
-### 1. **Consultar todos os produtos (GET)**
-
-```bash
-curl -X GET "http://localhost:8080/api/produtos"
-```
-
- **Buscar produtos filtrando por categoria (GET)**
-
-Aqui você pode adicionar o parâmetro `categoria` para buscar produtos em uma categoria específica.
-
-```bash
-curl -X GET "http://localhost:8080/api/produtos?categoria=Periferico"
-```
-## Observações
-
-- Certifique-se de que o MySQL esteja rodando antes de iniciar a aplicação.
-- Use o Swagger para interagir de forma intuitiva com os endpoints durante o desenvolvimento e teste.
+---
+Desenvolvido aplicando os mais altos rigores de *Clean Code* e Design de Software.
