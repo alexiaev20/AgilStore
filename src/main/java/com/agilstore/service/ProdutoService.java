@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.domain.Specification;
+
 
 @Service
 public class ProdutoService {
@@ -55,6 +57,11 @@ public class ProdutoService {
 
     public void excluirProduto(Long id) {
         produtoRepository.deleteById(id);
+    }
+
+    
+    public Page<Produto> listarProdutosComFiltro(Specification<Produto> spec, Pageable pageable) {
+        return produtoRepository.findAll(spec, pageable);
     }
 
     public Page<Produto> listarProdutosPaginados(Pageable pageable) {
