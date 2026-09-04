@@ -3,6 +3,11 @@ package com.agilstore.service;
 import com.agilstore.dto.ProdutoDTO;
 import com.agilstore.entity.Produto;
 import com.agilstore.repository.ProdutoRepository;
+import com.agilstore.entity.MovimentacaoEstoque;
+import com.agilstore.repository.MovimentacaoEstoqueRepository;
+import com.agilstore.event.EstoqueBaixoEvent;
+import org.springframework.context.ApplicationEventPublisher;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,10 +19,25 @@ import org.springframework.data.jpa.domain.Specification;
 
 @Service
 public class ProdutoService {
-    private final ProdutoRepository produtoRepository;
 
-    public ProdutoService(ProdutoRepository produtoRepository) {
+    private final ProdutoRepository produtoRepository;
+    private final MovimentacaoEstoqueRepository movimentacaoEstoqueRepository;
+    private final ApplicationEventPublisher eventPublisher;
+
+    public ProdutoService(ProdutoRepository produtoRepository, MovimentacaoEstoqueRepository movimentacaoEstoqueRepository, ApplicationEventPublisher eventPublisher) {
         this.produtoRepository = produtoRepository;
+        this.movimentacaoEstoqueRepository = movimentacaoEstoqueRepository;
+        this.eventPublisher = eventPublisher;
+    }
+
+
+    
+    private void registrarMovimentacao(Produto produto, int quantidade, String tipo) {
+        MovimentacaoEstoque mov = new MovimentacaoEstoque();
+        mov.setProduto(produto);
+        mov.setQuantidade(quantidade);
+        mov.setTipoMovimentacao(tipo);
+        movimentacaoEstoqueRepository.save(mov);
     }
 
     public Produto adicionarProduto(ProdutoDTO produtoDTO) {
@@ -26,7 +46,9 @@ public class ProdutoService {
         produto.setCategoria(produtoDTO.getCategoria());
         produto.setQuantidade(produtoDTO.getQuantidade());
         produto.setPreco(produtoDTO.getPreco());
-        return produtoRepository.save(produto);
+        Produto salvo = produtoRepository.save(produto);
+        registrarMovimentacao(salvo, salvo.getQuantidade(), "ENTRADA");
+        return salvo;
     }
 
     public List<Produto> listarProdutos() {
@@ -48,11 +70,14 @@ public class ProdutoService {
     public Produto atualizarProduto(Long id, ProdutoDTO produtoDTO) {
         Produto produto = buscarProdutoPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado."));
+        int qtdeAntiga = produto.getQuantidade();
         if (produtoDTO.getNome() != null) produto.setNome(produtoDTO.getNome());
         if (produtoDTO.getCategoria() != null) produto.setCategoria(produtoDTO.getCategoria());
         if (produtoDTO.getQuantidade() != 0) produto.setQuantidade(produtoDTO.getQuantidade());
         if (produtoDTO.getPreco() != 0) produto.setPreco(produtoDTO.getPreco());
-        return produtoRepository.save(produto);
+        Produto salvo = produtoRepository.save(produto);
+        registrarMovimentacao(salvo, salvo.getQuantidade(), "ENTRADA");
+        return salvo;
     }
 
     public void excluirProduto(Long id) {
