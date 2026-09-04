@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: agilstore-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: agilstore
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: agilstore-api
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: agilstore
+      DB_USER: root
+      DB_PASS: root
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./uploads:/app/uploads
+
+  prometheus:
+    image: prom/prometheus
+    container_name: agilstore-prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - api
+
+volumes:
+  mysql_data:
