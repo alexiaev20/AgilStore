@@ -11,6 +11,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +42,7 @@ public class ProdutoService {
         movimentacaoEstoqueRepository.save(mov);
     }
 
+    @CacheEvict(value = "produtos", allEntries = true)
     public Produto adicionarProduto(ProdutoDTO produtoDTO) {
         Produto produto = new Produto();
         produto.setNome(produtoDTO.getNome());
@@ -67,6 +70,7 @@ public class ProdutoService {
         return produtoRepository.findByCategoriaContainingIgnoreCase(categoria);
     }
 
+    @CacheEvict(value = "produtos", allEntries = true)
     public Produto atualizarProduto(Long id, ProdutoDTO produtoDTO) {
         Produto produto = buscarProdutoPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado."));
@@ -80,11 +84,13 @@ public class ProdutoService {
         return salvo;
     }
 
+    @CacheEvict(value = "produtos", allEntries = true)
     public void excluirProduto(Long id) {
         produtoRepository.deleteById(id);
     }
 
     
+    @Cacheable(value = "produtos", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<Produto> listarProdutosComFiltro(Specification<Produto> spec, Pageable pageable) {
         return produtoRepository.findAll(spec, pageable);
     }

@@ -14,6 +14,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.agilstore.service.report.RelatorioPdfService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -23,9 +33,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/api/produtos")
 public class ProdutoController {
     private final ProdutoService produtoService;
+    private final RelatorioPdfService relatorioPdfService;
 
     public ProdutoController(ProdutoService produtoService) {
         this.produtoService = produtoService;
+        this.relatorioPdfService = relatorioPdfService;
     }
 
     private ProdutoDTO converteParaDTO(Produto produto) {
@@ -35,6 +47,7 @@ public class ProdutoController {
         dto.setCategoria(produto.getCategoria());
         dto.setPreco(produto.getPreco());
         dto.setQuantidade(produto.getQuantidade());
+        dto.setImagemUrl(produto.getImagemUrl());
         
         dto.add(linkTo(methodOn(ProdutoController.class).buscarProdutoPorId(produto.getId())).withSelfRel());
         dto.add(linkTo(methodOn(ProdutoController.class).listarProdutosPaginados(null, null, null, 0, 10, "nome", "asc")).withRel("todos-produtos"));
@@ -84,6 +97,35 @@ public class ProdutoController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    
+    @GetMapping(value = "/relatorio", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> baixarRelatorio() {
+        try {
+            byte[] pdf = relatorioPdfService.gerarRelatorioInventario();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentDispositionFormData("attachment", "inventario.pdf");
+            return ResponseEntity.ok().headers(headers).body(pdf);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/{id}/imagem")
+    public ResponseEntity<ProdutoDTO> uploadImagem(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            String dir = "uploads/";
+            Files.createDirectories(Paths.get(dir));
+            Path path = Paths.get(dir + id + "_" + file.getOriginalFilename());
+            Files.write(path, file.getBytes());
+            
+            ProdutoDTO update = new ProdutoDTO();
+            update.setImagemUrl(path.toString());
+            return ResponseEntity.ok(atualizarProduto(id, update));
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     public void excluirProduto(@PathVariable Long id) {
         produtoService.excluirProduto(id);
     }

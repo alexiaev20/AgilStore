@@ -24,6 +24,7 @@ public class Produto {
     private String categoria;
     private int quantidade;
     private double preco;
+    private String imagemUrl;
 
     @CreatedDate
     @Column(updatable = false)
